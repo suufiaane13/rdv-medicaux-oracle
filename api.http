@@ -1,0 +1,72 @@
+### Variables — ajuster selon votre environnement
+@base = http://127.0.0.1:5000
+
+### Santé (sans auth)
+GET {{base}}/api/health
+
+### Connexion — récupère un cookie de session (copier Cookie dans les requêtes suivantes si besoin)
+POST {{base}}/api/auth/login
+Content-Type: application/json
+
+{
+  "username": "demo",
+  "password": "demo"
+}
+
+### Inscription — crée un utilisateur et ouvre une session (pas d’auth requise)
+POST {{base}}/api/auth/register
+Content-Type: application/json
+
+{
+  "username": "nouveau_user",
+  "password": "secret12",
+  "password_confirm": "secret12"
+}
+
+### Utilisateur courant
+GET {{base}}/api/auth/me
+
+### Déconnexion
+POST {{base}}/api/auth/logout
+
+### Patients — liste (pagination + recherche)
+GET {{base}}/api/patients?page=1&page_size=20&q=
+
+### Patients — détail
+GET {{base}}/api/patients/1
+
+### Patients — création
+POST {{base}}/api/patients
+Content-Type: application/json
+
+{
+  "nom": "Test",
+  "prenom": "Utilisateur",
+  "telephone": "0600000000",
+  "email": "test@example.com",
+  "cin": "XY123456"
+}
+
+### Médecins — liste
+GET {{base}}/api/medecins
+
+### Rendez-vous — liste avec filtres optionnels
+GET {{base}}/api/rendez-vous?date_debut=2026-01-01T00:00:00&date_fin=2027-01-01T00:00:00
+
+### Rendez-vous — historique des suppressions (rempli à la suppression via l’API)
+GET {{base}}/api/rendez-vous/historique/suppressions
+
+### Rendez-vous — suppression définitive (copie historique puis DELETE)
+DELETE {{base}}/api/rendez-vous/1
+
+### Rendez-vous — création
+POST {{base}}/api/rendez-vous
+Content-Type: application/json
+
+{
+  "patient_id": 1,
+  "medecin_id": 1,
+  "date_heure": "2026-06-15T10:00:00",
+  "motif": "Consultation",
+  "duree_minutes": 30
+}

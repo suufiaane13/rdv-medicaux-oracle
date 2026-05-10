@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<meta name="color-scheme" content="light dark"/>
+<title>Diagramme de séquence — Gestion RDV · rdv_app</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&family=Plus+Jakarta+Sans:ital,wght@0,400;0,500;0,600;0,700&display=swap" rel="stylesheet"/>
+<style>
+  :root {
+    --bg: hsl(210 20% 97%);
+    --surface: hsl(0 0% 100%);
+    --surface-elevated: hsl(0 0% 100%);
+    --border: hsl(214 20% 88%);
+    --text: hsl(222 47% 11%);
+    --muted: hsl(215 16% 42%);
+    --primary: hsl(173 58% 36%);
+    --primary-fg: hsl(0 0% 100%);
+    --primary-soft: hsl(173 45% 94%);
+    --primary-muted: hsl(173 40% 92%);
+    --entity-patient: hsl(173 50% 38%);
+    --entity-med: hsl(215 38% 48%);
+    --entity-rdv: hsl(199 75% 48%);
+    --entity-auth: hsl(215 14% 45%);
+    --entity-audit: hsl(12 72% 48%);
+    --pk: hsl(38 92% 48%);
+    --fk: hsl(188 72% 36%);
+    --uq: hsl(265 58% 42%);
+    --radius: 12px;
+    --font: "Plus Jakarta Sans", system-ui, sans-serif;
+    --mono: "JetBrains Mono", ui-monospace, monospace;
+    --shadow: 0 12px 40px hsl(173 25% 20% / 0.08);
+    --shadow-sm: 0 2px 8px hsl(222 47% 11% / 0.06);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: hsl(224 47% 7%);
+      --surface: hsl(224 42% 11%);
+      --surface-elevated: hsl(224 40% 13%);
+      --border: hsl(224 28% 18%);
+      --text: hsl(210 20% 96%);
+      --muted: hsl(215 16% 58%);
+      --primary: hsl(173 55% 46%);
+      --primary-fg: hsl(224 47% 8%);
+      --primary-soft: hsl(173 32% 18%);
+      --primary-muted: hsl(173 28% 22%);
+      --entity-patient: hsl(173 48% 52%);
+      --entity-med: hsl(215 45% 62%);
+      --entity-rdv: hsl(199 65% 58%);
+      --entity-auth: hsl(215 16% 58%);
+      --entity-audit: hsl(12 60% 58%);
+      --pk: hsl(38 88% 55%);
+      --fk: hsl(188 55% 52%);
+      --uq: hsl(265 52% 62%);
+      --shadow: 0 16px 48px hsl(0 0% 0% / 0.35);
+      --shadow-sm: 0 2px 10px hsl(0 0% 0% / 0.25);
+    }
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: var(--font);
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    -webkit-font-smoothing: antialiased;
+    line-height: 1.5;
+  }
+
+  .page {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2rem 1.25rem 3rem;
+  }
+
+  .hero {
+    text-align: center;
+    margin-bottom: 2rem;
+  }
+  .hero-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-family: var(--mono);
+    font-size: 0.65rem;
+    font-weight: 500;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--primary);
+    background: var(--primary-soft);
+    border: 1px solid hsl(173 40% 82%);
+    border-radius: 999px;
+    padding: 0.4rem 0.9rem;
+    margin-bottom: 1rem;
+  }
+  @media (prefers-color-scheme: dark) {
+    .hero-badge { border-color: hsl(173 30% 26%); }
+  }
+  .hero h1 {
+    font-size: clamp(1.55rem, 4.2vw, 2.2rem);
+    font-weight: 700;
+    letter-spacing: -0.03em;
+    line-height: 1.15;
+  }
+  .hero h1 em {
+    font-style: normal;
+    color: var(--primary);
+  }
+  .hero-desc {
+    margin-top: 0.75rem;
+    font-size: 0.95rem;
+    color: var(--muted);
+    max-width: 38rem;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .method-strip {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 11rem), 1fr));
+    gap: 0.65rem;
+    width: 100%;
+    max-width: min(44rem, 100%);
+    margin: 1.35rem auto 0;
+    padding: 0;
+    list-style: none;
+  }
+  .method-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.3rem;
+    text-align: center;
+    padding: 0.65rem 0.85rem;
+    min-height: 3.25rem;
+    width: 100%;
+    min-width: 0;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    box-shadow: var(--shadow-sm);
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+  }
+  .method-card:hover {
+    border-color: hsl(173 35% 78%);
+    box-shadow: 0 4px 14px hsl(222 47% 11% / 0.07);
+  }
+  @media (prefers-color-scheme: dark) {
+    .method-card:hover {
+      border-color: hsl(173 28% 32%);
+    }
+  }
+  .method-card__label {
+    font-family: var(--mono);
+    font-size: 0.62rem;
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--primary);
+  }
+  .method-card__meta {
+    font-size: 0.78rem;
+    font-weight: 500;
+    color: var(--muted);
+    line-height: 1.35;
+  }
+
+  .diagram-shell {
+    background: var(--surface-elevated);
+    border: 1px solid var(--border);
+    border-radius: calc(var(--radius) + 4px);
+    box-shadow: var(--shadow);
+    padding: 1.5rem 1rem 1.75rem;
+    position: relative;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  .diagram-shell::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    background: radial-gradient(ellipse 80% 50% at 50% -10%, hsl(173 50% 45% / 0.12), transparent 55%);
+    pointer-events: none;
+  }
+  @media (prefers-color-scheme: dark) {
+    .diagram-shell::before {
+      background: radial-gradient(ellipse 80% 50% at 50% -10%, hsl(173 45% 40% / 0.18), transparent 55%);
+    }
+  }
+
+  #seq {
+    width: 100%;
+    max-width: 100%;
+    height: auto;
+    display: block;
+    position: relative;
+    z-index: 1;
+  }
+
+  .legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem 1.25rem;
+    justify-content: center;
+    margin-top: 1.25rem;
+    font-family: var(--mono);
+    font-size: 0.7rem;
+    color: var(--muted);
+  }
+  .legend-item {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+  }
+  .seg-solid {
+    width: 26px;
+    height: 3px;
+    border-radius: 2px;
+    background: var(--entity-auth);
+  }
+  .seg-dash {
+    width: 26px;
+    border-top: 2px dashed var(--muted);
+    opacity: 0.85;
+  }
+
+  .meta-card {
+    margin-top: 1.5rem;
+    padding-top: 1.25rem;
+    border-top: 1px solid var(--border);
+    background: var(--primary-soft);
+    border-left: 1px solid hsl(173 35% 82%);
+    border-right: 1px solid hsl(173 35% 82%);
+    border-bottom: 1px solid hsl(173 35% 82%);
+    border-radius: var(--radius);
+    padding: 1rem 1.1rem;
+    font-size: 0.8125rem;
+    color: var(--muted);
+  }
+  @media (prefers-color-scheme: dark) {
+    .meta-card {
+      border-color: hsl(173 28% 24%);
+      background: var(--primary-muted);
+    }
+  }
+  .meta-card h3 {
+    font-size: 0.7rem;
+    font-family: var(--mono);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--primary);
+    margin-bottom: 0.5rem;
+    font-weight: 600;
+  }
+
+  footer {
+    text-align: center;
+    margin-top: 2.25rem;
+    font-size: 0.7rem;
+    font-family: var(--mono);
+    color: var(--muted);
+  }
+  footer a {
+    color: var(--primary);
+    font-weight: 600;
+    text-decoration: none;
+  }
+  footer a:hover {
+    text-decoration: underline;
+  }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <header class="hero">
+    <div class="hero-badge">Diagramme de séquence · UML</div>
+    <h1>Flux applicatif <em>connexion &amp; lecture RDV</em></h1>
+    <p class="hero-desc">
+      Parcours simplifié <strong>Navigateur (React)</strong> → <strong>API Flask</strong> → <strong>Oracle (PDB)</strong>,
+      aligné sur le projet <strong>rdv_app</strong>.
+    </p>
+    <ul class="method-strip" aria-label="Couche applicative">
+      <li class="method-card">
+        <span class="method-card__label">API</span>
+        <span class="method-card__meta">Flask · session cookie</span>
+      </li>
+      <li class="method-card">
+        <span class="method-card__label">UI</span>
+        <span class="method-card__meta">React · Vite</span>
+      </li>
+      <li class="method-card">
+        <span class="method-card__label">SGBD</span>
+        <span class="method-card__meta">Oracle · PDB</span>
+      </li>
+    </ul>
+  </header>
+
+  <div class="diagram-shell">
+    <svg id="seq" viewBox="0 0 920 560" xmlns="http://www.w3.org/2000/svg" aria-label="Diagramme de séquence connexion et liste RDV">
+      <defs>
+        <marker id="seq-arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+          <path d="M1 1L9 5L1 9" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </marker>
+      </defs>
+
+      <!-- Grille de fond -->
+      <g opacity="0.45" style="color: var(--border);">
+        <pattern id="dot-seq" width="24" height="24" patternUnits="userSpaceOnUse">
+          <circle cx="1" cy="1" r="0.8" fill="currentColor" opacity="0.06"/>
+        </pattern>
+        <rect width="920" height="560" fill="url(#dot-seq)"/>
+      </g>
+
+      <!-- Acteurs -->
+      <rect x="48" y="28" width="176" height="48" rx="10" fill="var(--surface)" stroke="var(--entity-auth)" stroke-width="2"/>
+      <rect x="48" y="28" width="5" height="48" rx="2" fill="var(--entity-auth)"/>
+      <text x="136" y="56" font-family="Plus Jakarta Sans, sans-serif" font-size="13" font-weight="700" fill="var(--entity-auth)" text-anchor="middle">Navigateur · React</text>
+
+      <rect x="372" y="28" width="176" height="48" rx="10" fill="var(--surface)" stroke="var(--entity-rdv)" stroke-width="2"/>
+      <rect x="372" y="28" width="5" height="48" rx="2" fill="var(--entity-rdv)"/>
+      <text x="460" y="56" font-family="Plus Jakarta Sans, sans-serif" font-size="13" font-weight="700" fill="var(--entity-rdv)" text-anchor="middle">API Flask</text>
+
+      <rect x="696" y="28" width="176" height="48" rx="10" fill="var(--surface)" stroke="var(--entity-med)" stroke-width="2"/>
+      <rect x="696" y="28" width="5" height="48" rx="2" fill="var(--entity-med)"/>
+      <text x="784" y="56" font-family="Plus Jakarta Sans, sans-serif" font-size="13" font-weight="700" fill="var(--entity-med)" text-anchor="middle">Oracle · PDB</text>
+
+      <!-- Lifelines -->
+      <line x1="136" y1="76" x2="136" y2="520" stroke="var(--border)" stroke-width="1.2" stroke-dasharray="5 6"/>
+      <line x1="460" y1="76" x2="460" y2="520" stroke="var(--border)" stroke-width="1.2" stroke-dasharray="5 6"/>
+      <line x1="784" y1="76" x2="784" y2="520" stroke="var(--border)" stroke-width="1.2" stroke-dasharray="5 6"/>
+
+      <!-- Fragment : authentification -->
+      <rect x="36" y="84" width="848" height="168" rx="12" fill="none" stroke="var(--border)" stroke-width="1.5" stroke-dasharray="8 5"/>
+      <text x="52" y="104" font-family="'JetBrains Mono', monospace" font-size="10" font-weight="600" fill="var(--muted)">auth · connexion session</text>
+
+      <!-- Messages auth -->
+      <line x1="136" y1="124" x2="452" y2="124" stroke="var(--entity-auth)" stroke-width="2" marker-end="url(#seq-arr)" style="color: var(--entity-auth)"/>
+      <text x="294" y="118" font-family="'JetBrains Mono', monospace" font-size="9.5" fill="var(--text)" text-anchor="middle">POST /api/auth/login</text>
+
+      <line x1="460" y1="152" x2="772" y2="152" stroke="var(--entity-rdv)" stroke-width="2" marker-end="url(#seq-arr)" style="color: var(--entity-rdv)"/>
+      <text x="616" y="146" font-family="'JetBrains Mono', monospace" font-size="9" fill="var(--text)" text-anchor="middle">SELECT … app_users</text>
+
+      <line x1="784" y1="180" x2="472" y2="180" stroke="var(--muted)" stroke-width="1.6" stroke-dasharray="7 5" marker-end="url(#seq-arr)" style="color: var(--muted)"/>
+      <text x="628" y="174" font-family="'JetBrains Mono', monospace" font-size="9" fill="var(--muted)" text-anchor="middle">ligne utilisateur</text>
+
+      <line x1="460" y1="208" x2="144" y2="208" stroke="var(--muted)" stroke-width="1.6" stroke-dasharray="7 5" marker-end="url(#seq-arr)" style="color: var(--muted)"/>
+      <text x="302" y="202" font-family="'JetBrains Mono', monospace" font-size="9" fill="var(--muted)" text-anchor="middle">200 · Set-Cookie session</text>
+
+      <!-- Fragment : liste RDV -->
+      <rect x="36" y="268" width="848" height="232" rx="12" fill="none" stroke="var(--border)" stroke-width="1.5" stroke-dasharray="8 5"/>
+      <text x="52" y="288" font-family="'JetBrains Mono', monospace" font-size="10" font-weight="600" fill="var(--muted)">données · liste des rendez-vous</text>
+
+      <line x1="136" y1="312" x2="452" y2="312" stroke="var(--entity-auth)" stroke-width="2" marker-end="url(#seq-arr)" style="color: var(--entity-auth)"/>
+      <text x="294" y="306" font-family="'JetBrains Mono', monospace" font-size="9.5" fill="var(--text)" text-anchor="middle">GET /api/rendez-vous</text>
+
+      <line x1="460" y1="348" x2="772" y2="348" stroke="var(--entity-rdv)" stroke-width="2" marker-end="url(#seq-arr)" style="color: var(--entity-rdv)"/>
+      <text x="616" y="342" font-family="'JetBrains Mono', monospace" font-size="9" fill="var(--text)" text-anchor="middle">SELECT rendez_vous … JOIN …</text>
+
+      <line x1="784" y1="388" x2="472" y2="388" stroke="var(--muted)" stroke-width="1.6" stroke-dasharray="7 5" marker-end="url(#seq-arr)" style="color: var(--muted)"/>
+      <text x="628" y="382" font-family="'JetBrains Mono', monospace" font-size="9" fill="var(--muted)" text-anchor="middle">jeu de lignes</text>
+
+      <line x1="460" y1="428" x2="144" y2="428" stroke="var(--muted)" stroke-width="1.6" stroke-dasharray="7 5" marker-end="url(#seq-arr)" style="color: var(--muted)"/>
+      <text x="302" y="422" font-family="'JetBrains Mono', monospace" font-size="9" fill="var(--muted)" text-anchor="middle">JSON { rendez_vous[] }</text>
+
+      <!-- Note -->
+      <rect x="56" y="452" width="808" height="56" rx="8" fill="var(--primary-soft)" stroke="var(--border)" stroke-width="1"/>
+      <text x="460" y="476" font-family="'JetBrains Mono', monospace" font-size="8.5" fill="var(--muted)" text-anchor="middle">En production : HTTPS, cookies sécurisés, validation serveur identique · proxy Vite /api → Flask en dev</text>
+      <text x="460" y="492" font-family="'JetBrains Mono', monospace" font-size="8.5" fill="var(--muted)" text-anchor="middle">Les chemins exacts peuvent varier selon les routes réelles du backend</text>
+    </svg>
+
+    <div class="legend">
+      <span class="legend-item"><span class="seg-solid"></span> Appel synchrone (requête / réponse métier)</span>
+      <span class="legend-item"><span class="seg-dash"></span> Réponse ou flux de retour</span>
+    </div>
+
+    <div class="meta-card">
+      <h3>Lecture rapide</h3>
+      Les traits pleins illustrent les <strong>requêtes HTTP</strong> et allers vers Oracle ; les traits en pointillés sont des <strong>réponses</strong> (données ou en-têtes). Les cadres en pointillés regroupent deux scénarios typiques après installation du schéma <code style="font-family: var(--mono); color: var(--text)">rdv_app</code>.
+    </div>
+  </div>
+
+  <footer>
+    Diagramme de séquence · schéma <strong>rdv_app</strong> ·
+    <a href="mld.html">Voir le MLD</a>
+  </footer>
+</div>
+</body>
+</html>

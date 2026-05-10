@@ -1,0 +1,181 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/*
+  Variables de thème (clair / sombre) — accent teal pour l’interface médicale.
+  Bascule via la classe .dark sur <html>.
+*/
+
+@layer base {
+  :root {
+    --background: 210 20% 98%;
+    --foreground: 222 47% 11%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 222 47% 11%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 222 47% 11%;
+
+    /* Teal médical — confiance, sobriété */
+    --primary: 173 58% 36%;
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 210 20% 96%;
+    --secondary-foreground: 222 47% 11%;
+
+    --muted: 210 18% 96%;
+    --muted-foreground: 215 16% 40%;
+
+    --accent: 173 45% 94%;
+    --accent-foreground: 173 58% 22%;
+
+    --destructive: 0 72% 42%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 214 20% 88%;
+    --input: 214 20% 88%;
+    --ring: 173 58% 36%;
+
+    --radius: 0.65rem;
+
+    --sidebar-background: 210 22% 97%;
+    --sidebar-foreground: 222 37% 18%;
+    --sidebar-accent: 173 45% 94%;
+    --sidebar-accent-foreground: 173 58% 22%;
+    --sidebar-border: 214 20% 90%;
+    --sidebar-ring: 173 58% 36%;
+
+    /* Largeur scrollbar verticale du <main> (Layout) — overlay dialog laisse cette bande visible */
+    --layout-main-scrollbar-y: 0px;
+  }
+
+  .dark {
+    --background: 224 47% 6%;
+    --foreground: 210 20% 96%;
+
+    --card: 224 44% 9%;
+    --card-foreground: 210 20% 96%;
+
+    --popover: 224 44% 9%;
+    --popover-foreground: 210 20% 96%;
+
+    --primary: 173 55% 45%;
+    --primary-foreground: 224 47% 6%;
+
+    --secondary: 224 35% 14%;
+    --secondary-foreground: 210 20% 96%;
+
+    --muted: 224 35% 14%;
+    --muted-foreground: 215 16% 62%;
+
+    --accent: 173 40% 18%;
+    --accent-foreground: 172 72% 88%;
+
+    --destructive: 0 62% 42%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 224 30% 16%;
+    --input: 224 30% 16%;
+    --ring: 173 55% 45%;
+
+    --sidebar-background: 224 44% 8%;
+    --sidebar-foreground: 210 18% 92%;
+    --sidebar-accent: 173 35% 16%;
+    --sidebar-accent-foreground: 172 72% 90%;
+    --sidebar-border: 224 30% 14%;
+    --sidebar-ring: 173 55% 45%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  html {
+    @apply scroll-smooth;
+  }
+  body {
+    @apply bg-background text-foreground;
+    font-feature-settings: "rlig" 1, "calt" 1;
+    font-size: 15px;
+  }
+}
+
+/*
+  Calendrier natif : icône alignée à droite (Chrome, Edge, Safari).
+  Classe partagée pour input[type=date] et input[type=datetime-local].
+  Firefox conserve son rendu natif (pas de pseudo WebKit).
+*/
+@layer components {
+  .datetime-local-icon-end,
+  .date-input-icon-end {
+    position: relative;
+    padding-inline-end: 2.75rem;
+    color-scheme: light;
+  }
+
+  html.dark .datetime-local-icon-end,
+  html.dark .date-input-icon-end {
+    color-scheme: dark;
+  }
+
+  .datetime-local-icon-end::-webkit-calendar-picker-indicator,
+  .date-input-icon-end::-webkit-calendar-picker-indicator {
+    position: absolute;
+    right: 0.65rem;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 1.25rem;
+    height: 1.25rem;
+    cursor: pointer;
+    opacity: 0.85;
+  }
+
+  /*
+    Chromium : l’icône reste souvent noire sur fond sombre malgré color-scheme.
+    brightness(0) invert(1) force une glyphe claire ; léger renforcement luminosité.
+  */
+  html.dark .datetime-local-icon-end::-webkit-calendar-picker-indicator,
+  html.dark .date-input-icon-end::-webkit-calendar-picker-indicator {
+    filter: brightness(0) invert(1);
+    opacity: 0.9;
+  }
+
+  /*
+    <select> natifs : masque la flèche système, triangle (plein) teal à droite.
+  */
+  .native-select-custom {
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24'%3E%3Cpath fill='%231d7366' d='M6.5%209h11L12%2015.5z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 0.65rem center;
+    background-size: 0.875rem 0.875rem;
+    padding-right: 2.35rem;
+  }
+
+  html.dark .native-select-custom {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24'%3E%3Cpath fill='%237dd3c1' d='M6.5%209h11L12%2015.5z'/%3E%3C/svg%3E");
+  }
+
+}
+
+/* Utilitaires doux type « dashboard » */
+@layer utilities {
+  .mesh-bg {
+    background-color: hsl(var(--background));
+    background-image:
+      radial-gradient(at 0% 0%, hsl(173 45% 92% / 0.55) 0px, transparent 50%),
+      radial-gradient(at 100% 0%, hsl(214 80% 92% / 0.35) 0px, transparent 45%),
+      radial-gradient(at 100% 100%, hsl(173 40% 88% / 0.4) 0px, transparent 50%);
+  }
+  .dark .mesh-bg {
+    background-image:
+      radial-gradient(at 0% 0%, hsl(173 40% 18% / 0.35) 0px, transparent 50%),
+      radial-gradient(at 100% 30%, hsl(214 40% 22% / 0.25) 0px, transparent 45%),
+      radial-gradient(at 80% 100%, hsl(173 35% 16% / 0.3) 0px, transparent 55%);
+  }
+}

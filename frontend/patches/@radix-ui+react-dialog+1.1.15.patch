@@ -1,0 +1,26 @@
+diff --git a/node_modules/@radix-ui/react-dialog/dist/index.js b/node_modules/@radix-ui/react-dialog/dist/index.js
+index ce328f1..cbd9c25 100644
+--- a/node_modules/@radix-ui/react-dialog/dist/index.js
++++ b/node_modules/@radix-ui/react-dialog/dist/index.js
+@@ -157,7 +157,7 @@ var DialogOverlayImpl = React.forwardRef(
+     return (
+       // Make sure `Content` is scrollable even when it doesn't live inside `RemoveScroll`
+       // ie. when `Overlay` and `Content` are siblings
+-      /* @__PURE__ */ (0, import_jsx_runtime.jsx)(import_react_remove_scroll.RemoveScroll, { as: Slot, allowPinchZoom: true, shards: [context.contentRef], children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(
++      /* @__PURE__ */ (0, import_jsx_runtime.jsx)(import_react_remove_scroll.RemoveScroll, { as: Slot, allowPinchZoom: true, removeScrollBar: false, shards: [context.contentRef], children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(
+         import_react_primitive.Primitive.div,
+         {
+           "data-state": getState(context.open),
+diff --git a/node_modules/@radix-ui/react-dialog/dist/index.mjs b/node_modules/@radix-ui/react-dialog/dist/index.mjs
+index 1358103..0d3ebee 100644
+--- a/node_modules/@radix-ui/react-dialog/dist/index.mjs
++++ b/node_modules/@radix-ui/react-dialog/dist/index.mjs
+@@ -105,7 +105,7 @@ var DialogOverlayImpl = React.forwardRef(
+     return (
+       // Make sure `Content` is scrollable even when it doesn't live inside `RemoveScroll`
+       // ie. when `Overlay` and `Content` are siblings
+-      /* @__PURE__ */ jsx(RemoveScroll, { as: Slot, allowPinchZoom: true, shards: [context.contentRef], children: /* @__PURE__ */ jsx(
++      /* @__PURE__ */ jsx(RemoveScroll, { as: Slot, allowPinchZoom: true, removeScrollBar: false, shards: [context.contentRef], children: /* @__PURE__ */ jsx(
+         Primitive.div,
+         {
+           "data-state": getState(context.open),
